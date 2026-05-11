@@ -10,18 +10,32 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as OffersRouteImport } from './routes/offers'
 import { Route as MobilesRouteImport } from './routes/mobiles'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AccessoriesRouteImport } from './routes/accessories'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProductProductSlugRouteImport } from './routes/product.$productSlug'
+import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OffersRoute = OffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MobilesRoute = MobilesRouteImport.update({
   id: '/mobiles',
   path: '/mobiles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccessoriesRoute = AccessoriesRouteImport.update({
@@ -34,39 +48,90 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProductProductSlugRoute = ProductProductSlugRouteImport.update({
+  id: '/product/$productSlug',
+  path: '/product/$productSlug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategorySlugRoute = CategorySlugRouteImport.update({
+  id: '/category/$slug',
+  path: '/category/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/accessories': typeof AccessoriesRoute
+  '/contact': typeof ContactRoute
   '/mobiles': typeof MobilesRoute
+  '/offers': typeof OffersRoute
   '/services': typeof ServicesRoute
+  '/category/$slug': typeof CategorySlugRoute
+  '/product/$productSlug': typeof ProductProductSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/accessories': typeof AccessoriesRoute
+  '/contact': typeof ContactRoute
   '/mobiles': typeof MobilesRoute
+  '/offers': typeof OffersRoute
   '/services': typeof ServicesRoute
+  '/category/$slug': typeof CategorySlugRoute
+  '/product/$productSlug': typeof ProductProductSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/accessories': typeof AccessoriesRoute
+  '/contact': typeof ContactRoute
   '/mobiles': typeof MobilesRoute
+  '/offers': typeof OffersRoute
   '/services': typeof ServicesRoute
+  '/category/$slug': typeof CategorySlugRoute
+  '/product/$productSlug': typeof ProductProductSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/accessories' | '/mobiles' | '/services'
+  fullPaths:
+    | '/'
+    | '/accessories'
+    | '/contact'
+    | '/mobiles'
+    | '/offers'
+    | '/services'
+    | '/category/$slug'
+    | '/product/$productSlug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/accessories' | '/mobiles' | '/services'
-  id: '__root__' | '/' | '/accessories' | '/mobiles' | '/services'
+  to:
+    | '/'
+    | '/accessories'
+    | '/contact'
+    | '/mobiles'
+    | '/offers'
+    | '/services'
+    | '/category/$slug'
+    | '/product/$productSlug'
+  id:
+    | '__root__'
+    | '/'
+    | '/accessories'
+    | '/contact'
+    | '/mobiles'
+    | '/offers'
+    | '/services'
+    | '/category/$slug'
+    | '/product/$productSlug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccessoriesRoute: typeof AccessoriesRoute
+  ContactRoute: typeof ContactRoute
   MobilesRoute: typeof MobilesRoute
+  OffersRoute: typeof OffersRoute
   ServicesRoute: typeof ServicesRoute
+  CategorySlugRoute: typeof CategorySlugRoute
+  ProductProductSlugRoute: typeof ProductProductSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -78,11 +143,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/offers': {
+      id: '/offers'
+      path: '/offers'
+      fullPath: '/offers'
+      preLoaderRoute: typeof OffersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mobiles': {
       id: '/mobiles'
       path: '/mobiles'
       fullPath: '/mobiles'
       preLoaderRoute: typeof MobilesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/accessories': {
@@ -99,15 +178,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/product/$productSlug': {
+      id: '/product/$productSlug'
+      path: '/product/$productSlug'
+      fullPath: '/product/$productSlug'
+      preLoaderRoute: typeof ProductProductSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/category/$slug': {
+      id: '/category/$slug'
+      path: '/category/$slug'
+      fullPath: '/category/$slug'
+      preLoaderRoute: typeof CategorySlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccessoriesRoute: AccessoriesRoute,
+  ContactRoute: ContactRoute,
   MobilesRoute: MobilesRoute,
+  OffersRoute: OffersRoute,
   ServicesRoute: ServicesRoute,
+  CategorySlugRoute: CategorySlugRoute,
+  ProductProductSlugRoute: ProductProductSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

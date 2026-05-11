@@ -1,4 +1,5 @@
 import * as Icons from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { CATEGORIES } from "@/lib/site-data";
 import { ArrowRight } from "lucide-react";
 
@@ -6,13 +7,15 @@ export function Categories() {
   return (
     <section className="relative py-14">
       <div className="mx-auto max-w-6xl px-4">
-        <SectionHeader eyebrow="Browse" title="Shop by Category" subtitle="Explore our complete range" link="View All" />
+        <SectionHeader eyebrow="Browse" title="Shop by Category" subtitle="Tap any category to view products" />
         <div className="mt-8 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-10 gap-3">
           {CATEGORIES.map((c, i) => {
             const Icon = (Icons as any)[c.icon] || Icons.Package;
             return (
-              <button
-                key={c.name}
+              <Link
+                key={c.slug}
+                to="/category/$slug"
+                params={{ slug: c.slug }}
                 className="group relative flex flex-col items-center gap-2 rounded-2xl bg-card border border-border/60 p-3 hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 shadow-soft animate-fade-up"
                 style={{ animationDelay: `${i * 25}ms` }}
               >
@@ -21,7 +24,7 @@ export function Categories() {
                   <Icon className="h-5 w-5" strokeWidth={2} />
                 </div>
                 <span className="text-[11px] font-semibold text-center leading-tight">{c.name}</span>
-              </button>
+              </Link>
             );
           })}
         </div>

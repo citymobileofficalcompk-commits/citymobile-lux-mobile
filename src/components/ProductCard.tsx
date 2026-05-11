@@ -1,23 +1,16 @@
-import { Heart, ShoppingCart, Smartphone } from "lucide-react";
-
-type Product = {
-  id: number;
-  name: string;
-  brand: string;
-  price: number;
-  oldPrice?: number;
-  ram?: string;
-  storage?: string;
-  badge?: string;
-};
+import { Link } from "@tanstack/react-router";
+import { Heart, Smartphone, Eye } from "lucide-react";
+import type { Product } from "@/lib/site-data";
 
 const fmt = (n: number) => "Rs. " + n.toLocaleString("en-PK");
 
 export function ProductCard({ p, index = 0 }: { p: Product; index?: number }) {
   const off = p.oldPrice ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0;
   return (
-    <div
-      className="group relative rounded-3xl bg-card border border-border/60 overflow-hidden shadow-soft hover:shadow-elevated hover:-translate-y-1 transition-all duration-300 animate-fade-up"
+    <Link
+      to="/product/$productSlug"
+      params={{ productSlug: p.slug }}
+      className="group relative rounded-3xl bg-card border border-border/60 overflow-hidden shadow-soft hover:shadow-elevated hover:-translate-y-1 transition-all duration-300 animate-fade-up block"
       style={{ animationDelay: `${index * 60}ms` }}
     >
       {/* Image */}
@@ -31,7 +24,11 @@ export function ProductCard({ p, index = 0 }: { p: Product; index?: number }) {
             {p.badge || `-${off}%`}
           </span>
         )}
-        <button className="absolute top-3 right-3 h-9 w-9 rounded-full glass flex items-center justify-center hover:bg-destructive hover:text-white transition-colors" aria-label="Wishlist">
+        <button
+          onClick={(e) => { e.preventDefault(); }}
+          className="absolute top-3 right-3 h-9 w-9 rounded-full glass flex items-center justify-center hover:bg-destructive hover:text-white transition-colors"
+          aria-label="Wishlist"
+        >
           <Heart className="h-4 w-4" />
         </button>
       </div>
@@ -47,10 +44,10 @@ export function ProductCard({ p, index = 0 }: { p: Product; index?: number }) {
           <span className="font-display text-base font-extrabold text-primary">{fmt(p.price)}</span>
           {p.oldPrice && <span className="text-xs text-muted-foreground line-through">{fmt(p.oldPrice)}</span>}
         </div>
-        <button className="mt-3 w-full h-10 rounded-xl bg-foreground text-background text-sm font-semibold inline-flex items-center justify-center gap-2 hover:bg-primary transition-colors">
-          <ShoppingCart className="h-3.5 w-3.5" /> Add to Cart
-        </button>
+        <div className="mt-3 w-full h-10 rounded-xl bg-foreground text-background text-sm font-semibold inline-flex items-center justify-center gap-2 group-hover:bg-primary transition-colors">
+          <Eye className="h-3.5 w-3.5" /> View & Order
+        </div>
       </div>
-    </div>
+    </Link>
   );
 }

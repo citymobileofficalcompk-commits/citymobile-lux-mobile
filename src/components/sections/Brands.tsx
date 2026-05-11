@@ -13,8 +13,20 @@ export function Brands() {
         <div className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-background to-transparent z-10" />
         <div className="flex gap-4 animate-marquee w-max">
           {loop.map((b, i) => (
-            <div key={i} className="shrink-0 w-36 h-20 rounded-2xl glass border border-border/60 flex items-center justify-center font-display font-bold text-lg text-foreground/80 hover:text-primary hover:border-primary/40 hover:shadow-neon transition-all">
-              {b}
+            <div
+              key={i}
+              className="shrink-0 w-32 sm:w-40 h-20 rounded-2xl glass border border-border/60 flex items-center justify-center hover:border-primary/40 hover:shadow-neon transition-all p-4"
+            >
+              {b.logo ? (
+                <img
+                  src={b.logo}
+                  alt={`${b.name} logo`}
+                  loading="lazy"
+                  className="max-h-10 max-w-full object-contain opacity-80 hover:opacity-100 transition-opacity"
+                />
+              ) : (
+                <span className="font-display font-extrabold text-xl text-foreground/80 tracking-tight">{b.name}</span>
+              )}
             </div>
           ))}
         </div>
