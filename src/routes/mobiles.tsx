@@ -15,10 +15,11 @@ export const Route = createFileRoute("/mobiles")({
 
 function MobilesPage() {
   const [active, setActive] = useState<string>("All");
-  const filtered = active === "All" ? PRODUCTS : PRODUCTS.filter((p) => p.brand === active);
+  const mobiles = PRODUCTS.filter((p) => p.category === "new-mobile" || p.category === "used-mobile");
+  const filtered = active === "All" ? mobiles : mobiles.filter((p) => p.brand === active);
 
   return (
-    <div className="pt-28 pb-16">
+    <div className="pt-24 pb-32">
       <div className="mx-auto max-w-6xl px-4">
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary/80">Catalog</p>
         <h1 className="mt-2 font-display text-3xl sm:text-5xl font-extrabold tracking-tight">Premium <span className="text-gradient">Smartphones</span></h1>
@@ -26,7 +27,7 @@ function MobilesPage() {
 
         {/* Brand filter */}
         <div className="mt-6 flex gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4">
-          {["All", ...BRANDS].map((b) => (
+          {["All", ...BRANDS.map((b) => b.name)].map((b) => (
             <button key={b} onClick={() => setActive(b)} className={`shrink-0 px-4 h-10 rounded-full text-sm font-semibold transition-all ${active === b ? "bg-foreground text-background shadow-soft" : "glass border border-border/60 hover:bg-accent"}`}>
               {b}
             </button>

@@ -103,7 +103,7 @@ function ProductPage() {
 
             {p.features && p.features.length > 0 && (
               <ul className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {p.features.map((f) => (
+                {p.features.map((f: string) => (
                   <li key={f} className="flex items-start gap-2 text-sm">
                     <Check className="h-4 w-4 text-[oklch(0.66_0.17_150)] mt-0.5 shrink-0" /> {f}
                   </li>

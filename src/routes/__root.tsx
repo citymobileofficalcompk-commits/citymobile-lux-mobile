@@ -13,6 +13,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
 import { Splash } from "@/components/Splash";
+import { BottomNav } from "@/components/BottomNav";
 
 function NotFoundComponent() {
   return (
@@ -119,11 +120,12 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <Splash />
       <Header />
-      <main className="min-h-screen">
+      <main className="min-h-screen pb-24">
         <Outlet />
       </main>
       <Footer />
       <FloatingWhatsApp />
+      <BottomNav />
     </QueryClientProvider>
   );
 }

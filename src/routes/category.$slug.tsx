@@ -40,7 +40,7 @@ function CategoryPage() {
 
         {products.length > 0 ? (
           <div className="mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-            {products.map((p, i) => <ProductCard key={p.id} p={p} index={i} />)}
+            {products.map((p: any, i: number) => <ProductCard key={p.id} p={p} index={i} />)}
           </div>
         ) : (
           <div className="mt-12 rounded-3xl bg-card border border-border/60 p-10 text-center">
