@@ -1,26 +1,42 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Hero } from "@/components/sections/Hero";
+import { TrustStrip } from "@/components/sections/TrustStrip";
+import { Categories } from "@/components/sections/Categories";
+import { DealOfTheDay } from "@/components/sections/DealOfTheDay";
+import { FeaturedProducts } from "@/components/sections/FeaturedProducts";
+import { Brands } from "@/components/sections/Brands";
+import { Services } from "@/components/sections/Services";
+import { Reviews } from "@/components/sections/Reviews";
+import { Gallery } from "@/components/sections/Gallery";
+import { AboutOwner } from "@/components/sections/AboutOwner";
+import { FAQ } from "@/components/sections/FAQ";
+import { Contact } from "@/components/sections/Contact";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "City Mobile — Premium Mobiles & Accessories Store in Pakistan" },
+      { name: "description", content: "Shop original PTA-approved smartphones, premium accessories & expert mobile repair at City Mobile. Multan & DG Khan." },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
-
 function Index() {
-  return <PlaceholderIndex />;
+  return (
+    <>
+      <Hero />
+      <TrustStrip />
+      <Categories />
+      <DealOfTheDay />
+      <FeaturedProducts />
+      <Brands />
+      <Services />
+      <Reviews />
+      <Gallery />
+      <AboutOwner />
+      <FAQ />
+      <Contact />
+    </>
+  );
 }
