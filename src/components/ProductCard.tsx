@@ -10,7 +10,7 @@ export function ProductCard({ p, index = 0 }: { p: Product; index?: number }) {
     <Link
       to="/product/$productSlug"
       params={{ productSlug: p.slug }}
-      className="group relative rounded-3xl bg-card border border-border/60 overflow-hidden shadow-soft hover:shadow-elevated hover:-translate-y-1 transition-all duration-300 animate-fade-up block"
+      className="group relative rounded-3xl bg-card border border-border/60 overflow-hidden shadow-soft hover:shadow-elevated hover:-translate-y-1 transition-transform duration-200 animate-fade-up block"
       style={{ animationDelay: `${index * 60}ms` }}
     >
       {/* Image */}
