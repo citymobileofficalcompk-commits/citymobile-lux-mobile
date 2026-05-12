@@ -110,9 +110,9 @@ export function Header() {
       </div>
 
       {/* Slide-in menu */}
-      <div className={`fixed inset-0 z-[60] transition-opacity duration-300 ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
+      <div className={`fixed inset-0 z-[60] transition-opacity duration-150 ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
         <div className="absolute inset-0 bg-foreground/40 backdrop-blur-sm" onClick={() => setOpen(false)} />
-        <aside className={`absolute top-0 right-0 h-full w-[88%] max-w-sm bg-card glass shadow-elevated transition-transform duration-400 ease-out ${open ? "translate-x-0" : "translate-x-full"}`}>
+        <aside className={`absolute top-0 right-0 h-full w-[88%] max-w-sm bg-card glass shadow-elevated transition-transform duration-200 ease-out will-change-transform ${open ? "translate-x-0" : "translate-x-full"}`}>
           <div className="p-5 border-b flex items-center justify-between">
             <Logo size="sm" />
             <button onClick={() => setOpen(false)} className="h-9 w-9 flex items-center justify-center rounded-xl bg-foreground/5 hover:bg-foreground/10">
@@ -130,8 +130,8 @@ export function Header() {
                   key={n.to}
                   {...props}
                   onClick={() => setOpen(false)}
-                  className="group flex items-center gap-3 px-4 py-3.5 rounded-xl hover:bg-accent transition-all animate-fade-up"
-                  style={{ animationDelay: `${i * 35}ms` }}
+                  className="group flex items-center gap-3 px-4 py-3.5 rounded-xl hover:bg-accent transition-colors duration-150 animate-fade-up"
+                  style={{ animationDelay: `${i * 15}ms` }}
                 >
                   <span className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-neon-gradient group-hover:text-white transition-all">
                     <Icon className="h-4 w-4" />
