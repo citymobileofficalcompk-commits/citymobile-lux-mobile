@@ -8,7 +8,6 @@ import { Brands } from "@/components/sections/Brands";
 import { Services } from "@/components/sections/Services";
 import { Reviews } from "@/components/sections/Reviews";
 import { Gallery } from "@/components/sections/Gallery";
-import { AboutOwner } from "@/components/sections/AboutOwner";
 import { FAQ } from "@/components/sections/FAQ";
 import { Contact } from "@/components/sections/Contact";
 
@@ -34,7 +33,6 @@ function Index() {
       <Services />
       <Reviews />
       <Gallery />
-      <AboutOwner />
       <FAQ />
       <Contact />
     </>
