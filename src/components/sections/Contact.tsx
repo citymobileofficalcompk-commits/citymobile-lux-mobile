@@ -1,5 +1,5 @@
-import { Clock, MapPin, MessageCircle, Phone } from "lucide-react";
-import { PHONES, WHATSAPP } from "@/lib/site-data";
+import { Clock, MapPin, MessageCircle, Phone, Instagram, Facebook } from "lucide-react";
+import { PHONES, WHATSAPP, SOCIALS } from "@/lib/site-data";
 import { SectionHeader } from "./Categories";
 
 const LOCATIONS = [
