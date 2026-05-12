@@ -110,9 +110,9 @@ export function Header() {
       </div>
 
       {/* Slide-in menu */}
-      <div className={`fixed inset-0 z-[60] transition-opacity duration-300 ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
+      <div className={`fixed inset-0 z-[60] transition-opacity duration-150 ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
         <div className="absolute inset-0 bg-foreground/40 backdrop-blur-sm" onClick={() => setOpen(false)} />
-        <aside className={`absolute top-0 right-0 h-full w-[88%] max-w-sm bg-card glass shadow-elevated transition-transform duration-400 ease-out ${open ? "translate-x-0" : "translate-x-full"}`}>
+        <aside className={`absolute top-0 right-0 h-full w-[88%] max-w-sm bg-card glass shadow-elevated transition-transform duration-200 ease-out will-change-transform ${open ? "translate-x-0" : "translate-x-full"}`}>
           <div className="p-5 border-b flex items-center justify-between">
             <Logo size="sm" />
             <button onClick={() => setOpen(false)} className="h-9 w-9 flex items-center justify-center rounded-xl bg-foreground/5 hover:bg-foreground/10">
