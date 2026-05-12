@@ -130,8 +130,8 @@ export function Header() {
                   key={n.to}
                   {...props}
                   onClick={() => setOpen(false)}
-                  className="group flex items-center gap-3 px-4 py-3.5 rounded-xl hover:bg-accent transition-all animate-fade-up"
-                  style={{ animationDelay: `${i * 35}ms` }}
+                  className="group flex items-center gap-3 px-4 py-3.5 rounded-xl hover:bg-accent transition-colors duration-150 animate-fade-up"
+                  style={{ animationDelay: `${i * 15}ms` }}
                 >
                   <span className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-neon-gradient group-hover:text-white transition-all">
                     <Icon className="h-4 w-4" />
