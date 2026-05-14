@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { Instagram, Facebook, MapPin, Phone, Mail, Clock, MessageCircle } from "lucide-react";
+import { Instagram, Facebook, MapPin, Phone, Clock, MessageCircle } from "lucide-react";
 import { Logo } from "./Logo";
-import { PHONES, EMAIL, SOCIALS, WHATSAPP } from "@/lib/site-data";
+import { PHONES, SOCIALS, WHATSAPP } from "@/lib/site-data";
 
 export function Footer() {
   return (
@@ -43,7 +43,6 @@ export function Footer() {
               {PHONES.map((p) => (
                 <li key={p} className="flex gap-2.5"><Phone className="h-4 w-4 mt-0.5 shrink-0 text-neon" /><a href={`tel:${p.replace(/\D/g, "")}`} className="hover:text-white">{p}</a></li>
               ))}
-              <li className="flex gap-2.5"><Mail className="h-4 w-4 mt-0.5 shrink-0 text-neon" /><a href={`mailto:${EMAIL}`} className="hover:text-white">{EMAIL}</a></li>
               <li className="flex gap-2.5"><Clock className="h-4 w-4 mt-0.5 shrink-0 text-neon" /><span>Mon – Sun: 10AM – 10PM</span></li>
             </ul>
           </div>

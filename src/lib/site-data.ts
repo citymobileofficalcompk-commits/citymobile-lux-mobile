@@ -19,6 +19,7 @@ export const CATEGORIES = [
   { slug: "mic", name: "Mic", icon: "Mic" },
   { slug: "lights", name: "Lights", icon: "Lightbulb" },
   { slug: "holders", name: "Holders", icon: "MonitorSmartphone" },
+  { slug: "stands", name: "Stands", icon: "TabletSmartphone" },
 ] as const;
 
 export const BRANDS = [

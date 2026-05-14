@@ -68,7 +68,7 @@ function OffersPage() {
               </div>
               
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                {products.map((p, i) => <ProductCard key={p.id} p={p} index={i} />)}
+                {products.map((p: any, i: number) => <ProductCard key={p.id} p={p} index={i} />)}
               </div>
             </section>
           </div>
