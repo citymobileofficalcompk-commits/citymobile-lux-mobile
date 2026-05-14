@@ -1,39 +1,59 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { ArrowLeft, Check, MessageCircle, ShieldCheck, Smartphone, Star, Truck } from "lucide-react";
-import { findProductBySlug, productsByCategory, WHATSAPP } from "@/lib/site-data";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowLeft, Check, MessageCircle, ShieldCheck, Smartphone, Star, Truck, Loader2, ImageIcon } from "lucide-react";
+import { WHATSAPP } from "@/lib/site-data";
 import { ProductCard } from "@/components/ProductCard";
+import { supabase } from "@/lib/supabase";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/product/$productSlug")({
-  head: ({ params }) => {
-    const p = findProductBySlug(params.productSlug);
-    const title = p ? `${p.name} — Buy Online | City Mobile` : "Product | City Mobile";
-    const desc = p?.description ?? "Order premium mobiles & accessories from City Mobile.";
-    return { meta: [{ title }, { name: "description", content: desc }] };
-  },
-  loader: ({ params }) => {
-    const product = findProductBySlug(params.productSlug);
-    if (!product) throw notFound();
+  loader: async ({ params }) => {
+    const { data: product, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', params.productSlug)
+      .single();
+    
+    if (error || !product) throw notFound();
     return { product };
   },
   component: ProductPage,
   notFoundComponent: () => (
-    <div className="pt-32 pb-20 text-center">
-      <h1 className="text-2xl font-bold">Product not found</h1>
-      <Link to="/" className="text-primary mt-4 inline-block">Back home</Link>
+    <div className="pt-32 pb-20 text-center flex flex-col items-center gap-4">
+      <div className="w-16 h-16 rounded-3xl bg-slate-50 flex items-center justify-center text-slate-200">
+        <Smartphone className="w-8 h-8" />
+      </div>
+      <h1 className="text-2xl font-black text-[#001C4B]">Product not found</h1>
+      <Link to="/" className="text-cyan-500 font-bold mt-2">Back to home</Link>
     </div>
   ),
 });
 
-const fmt = (n: number) => "Rs. " + n.toLocaleString("en-PK");
+const fmt = (n: number) => "Rs. " + (n || 0).toLocaleString("en-PK");
 
 function ProductPage() {
   const { product: p } = Route.useLoaderData();
-  const related = useMemo(
-    () => productsByCategory(p.category).filter((x) => x.id !== p.id).slice(0, 4),
-    [p]
-  );
-  const off = p.oldPrice ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0;
+  const [related, setRelated] = useState<any[]>([]);
+  const [activeImg, setActiveImg] = useState(p.images?.[0] || '');
+
+  useEffect(() => {
+    async function fetchRelated() {
+      const { data } = await supabase
+        .from('products')
+        .select('*')
+        .eq('category', p.category)
+        .eq('is_active', true)
+        .neq('id', p.id)
+        .limit(4);
+      if (data) setRelated(data);
+    }
+    fetchRelated();
+    setActiveImg(p.images?.[0] || '');
+  }, [p]);
+
+  const price = p.discounted_price || p.base_price;
+  const oldPrice = p.discounted_price ? p.base_price : null;
+  const off = oldPrice ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
 
   const [form, setForm] = useState({
     name: "", phone: "", city: "", address: "", quantity: 1, notes: "",
@@ -44,7 +64,7 @@ function ProductPage() {
     const msg =
       `*New Order — City Mobile*\n\n` +
       `*Product:* ${p.name}\n` +
-      `*Price:* ${fmt(p.price)}\n` +
+      `*Price:* ${fmt(price)}\n` +
       `*Quantity:* ${form.quantity}\n\n` +
       `*Customer Name:* ${form.name}\n` +
       `*Phone:* ${form.phone}\n` +
@@ -55,125 +75,206 @@ function ProductPage() {
   };
 
   return (
-    <div className="pt-24 pb-32">
-      <div className="mx-auto max-w-6xl px-4">
-        <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary">
-          <ArrowLeft className="h-4 w-4" /> Back
+    <div className="pt-24 pb-32 animate-in fade-in duration-700 bg-white">
+      <div className="mx-auto max-w-7xl px-4 lg:px-8">
+        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-bold text-slate-400 hover:text-cyan-500 transition-colors">
+          <ArrowLeft className="h-4 w-4" /> Back to Store
         </Link>
 
-        <div className="mt-4 grid lg:grid-cols-2 gap-8">
-          {/* Gallery */}
-          <div>
-            <div className="relative aspect-square rounded-3xl bg-gradient-to-br from-secondary via-background to-accent overflow-hidden shadow-elevated">
-              <div className="absolute inset-0 bg-glow opacity-50" />
-              <div className="absolute inset-0 flex items-center justify-center text-primary/30 animate-float">
-                <Smartphone className="h-48 w-48" strokeWidth={1} />
-              </div>
-              {(p.badge || off > 0) && (
-                <span className="absolute top-4 left-4 rounded-full bg-neon-gradient text-white text-xs font-bold px-3 py-1.5 shadow-neon">
-                  {p.badge || `-${off}%`}
-                </span>
+        <div className="mt-8 grid lg:grid-cols-2 gap-16 items-start">
+          {/* Gallery Section */}
+          <div className="space-y-6">
+            <div className="relative aspect-[4/5] rounded-[2.5rem] bg-slate-50 overflow-hidden border border-slate-100 shadow-xl shadow-slate-200/50">
+              {activeImg ? (
+                <img src={activeImg} alt={p.name} className="w-full h-full object-cover animate-in fade-in zoom-in-95 duration-500" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-slate-200">
+                  <Smartphone className="h-32 w-32" strokeWidth={1} />
+                </div>
+              )}
+              {(p.discount_badge || off > 0) && (
+                <div className="absolute top-8 left-8 flex flex-col gap-2">
+                   <span className="rounded-full bg-cyan-500 text-white text-[10px] font-black uppercase tracking-widest px-5 py-2 shadow-lg shadow-cyan-500/20">
+                    {p.discount_badge || `-${off}% OFF`}
+                  </span>
+                </div>
               )}
             </div>
-            <div className="mt-3 grid grid-cols-4 gap-2">
-              {[0, 1, 2, 3].map((i) => (
-                <div key={i} className="aspect-square rounded-2xl bg-gradient-to-br from-secondary to-accent flex items-center justify-center text-primary/30 border border-border/60 hover:border-primary/40 transition cursor-pointer">
-                  <Smartphone className="h-8 w-8" strokeWidth={1} />
-                </div>
-              ))}
-            </div>
+            
+            {p.images?.length > 1 && (
+              <div className="grid grid-cols-5 gap-3">
+                {p.images.map((img: string, i: number) => (
+                  <button 
+                    key={i} 
+                    onClick={() => setActiveImg(img)}
+                    className={cn(
+                      "aspect-square rounded-2xl overflow-hidden border-2 transition-all group relative",
+                      activeImg === img ? "border-cyan-500 shadow-md shadow-cyan-100" : "border-slate-100 opacity-60 hover:opacity-100 hover:border-slate-200"
+                    )}
+                  >
+                    <img src={img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Info */}
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary/80">{p.brand}</p>
-            <h1 className="mt-2 font-display text-3xl sm:text-4xl font-extrabold tracking-tight">{p.name}</h1>
-            <div className="mt-2 flex items-center gap-2 text-sm">
-              <div className="flex">{[1, 2, 3, 4, 5].map((i) => <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />)}</div>
-              <span className="text-muted-foreground">(4.9 · 250+ reviews)</span>
+          {/* Product Summary */}
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-500 bg-cyan-50 px-3 py-1 rounded-full">{p.brand}</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{p.category}</span>
+            </div>
+            
+            <h1 className="font-display text-4xl sm:text-6xl font-extrabold text-[#001C4B] leading-[1.1] tracking-tight">{p.name}</h1>
+            
+            <div className="mt-6 flex items-center gap-4">
+              <span className="text-5xl font-black text-[#001C4B] tracking-tight">{fmt(price)}</span>
+              {oldPrice && (
+                <span className="text-2xl text-slate-300 line-through font-bold">{fmt(oldPrice)}</span>
+              )}
             </div>
 
-            <div className="mt-5 flex items-baseline gap-3">
-              <span className="font-display text-3xl font-extrabold text-primary">{fmt(p.price)}</span>
-              {p.oldPrice && <span className="text-base text-muted-foreground line-through">{fmt(p.oldPrice)}</span>}
-              {off > 0 && <span className="text-xs font-bold text-[oklch(0.66_0.17_150)]">Save {off}%</span>}
-            </div>
-
-            {p.description && <p className="mt-5 text-foreground/80 leading-relaxed">{p.description}</p>}
-
-            {p.features && p.features.length > 0 && (
-              <ul className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {p.features.map((f: string) => (
-                  <li key={f} className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-[oklch(0.66_0.17_150)] mt-0.5 shrink-0" /> {f}
-                  </li>
-                ))}
-              </ul>
+            {/* Highlights List */}
+            {p.highlights?.length > 0 && (
+              <div className="mt-10 space-y-4">
+                <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Key Highlights</h3>
+                <ul className="space-y-3">
+                  {p.highlights.map((h: string, i: number) => (
+                    <li key={i} className="flex items-center gap-3 text-slate-600 font-medium group">
+                      <div className="w-2 h-2 rounded-full bg-cyan-400 group-hover:scale-125 transition-transform" />
+                      {h}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
 
-            <div className="mt-6 grid grid-cols-3 gap-2">
-              {[
-                { i: ShieldCheck, t: "PTA Approved" },
-                { i: Truck, t: "Free Delivery" },
-                { i: Star, t: "Warranty" },
-              ].map((x) => (
-                <div key={x.t} className="flex flex-col items-center gap-1 rounded-2xl glass p-3 text-xs font-medium">
-                  <x.i className="h-4 w-4 text-primary" />
-                  <span>{x.t}</span>
+            {/* Features Badges */}
+            {p.features?.length > 0 && (
+              <div className="mt-10 flex flex-wrap gap-2">
+                {p.features.map((f: string, i: number) => (
+                  <span key={i} className="px-4 py-2 bg-slate-50 border border-slate-100 text-[#001C4B] text-[10px] font-black uppercase tracking-widest rounded-xl flex items-center gap-2">
+                    <Check className="w-3 h-3 text-cyan-500" /> {f}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <div className="mt-12 flex items-center gap-6 p-6 bg-slate-50 rounded-[2rem] border border-slate-100">
+               <div className="flex -space-x-2">
+                {[1,2,3,4].map(i => (
+                  <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-slate-200 flex items-center justify-center overflow-hidden">
+                    <img src={`https://i.pravatar.cc/100?u=${i+10}`} className="w-full h-full object-cover" />
+                  </div>
+                ))}
+              </div>
+              <div>
+                <div className="flex text-amber-400 gap-0.5">
+                  {[1, 2, 3, 4, 5].map((i) => <Star key={i} className="h-3 w-3 fill-current" />)}
                 </div>
-              ))}
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Trusted by 2k+ happy customers</p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Order form */}
-        <div className="mt-12 relative overflow-hidden rounded-3xl bg-hero text-white shadow-elevated">
-          <div className="absolute inset-0 bg-glow opacity-50" />
-          <div className="absolute -top-32 -right-32 h-80 w-80 rounded-full bg-neon-gradient blur-3xl opacity-30" />
-          <div className="relative p-6 sm:p-10">
-            <div className="inline-flex items-center gap-2 rounded-full glass-dark px-3 py-1.5 text-xs font-bold">
-              <MessageCircle className="h-3.5 w-3.5 text-neon" /> ORDER NOW
+        {/* Detailed Info Tabs Section */}
+        <div className="mt-32 border-t border-slate-100 pt-20">
+          <div className="grid lg:grid-cols-3 gap-20">
+            <div className="lg:col-span-2 space-y-16">
+              {/* Description */}
+              <section>
+                <h3 className="text-2xl font-black text-[#001C4B] mb-8 flex items-center gap-3">
+                  <div className="w-2 h-8 bg-cyan-400 rounded-full" />
+                  Product Overview
+                </h3>
+                <div className="prose prose-slate max-w-none">
+                  <p className="text-lg text-slate-600 leading-relaxed font-medium">
+                    {p.description || "Order original PTA-approved smartphones and premium accessories with official warranty and nationwide delivery. We ensure authentic products with reliable customer support and fast shipping across Pakistan."}
+                  </p>
+                </div>
+              </section>
+
+              {/* Specs Table */}
+              {p.specs && Object.keys(p.specs).length > 0 && (
+                <section>
+                  <h3 className="text-2xl font-black text-[#001C4B] mb-8 flex items-center gap-3">
+                    <div className="w-2 h-8 bg-blue-500 rounded-full" />
+                    Technical Specifications
+                  </h3>
+                  <div className="rounded-[2rem] border border-slate-100 overflow-hidden shadow-sm">
+                    <table className="w-full border-collapse">
+                      <tbody>
+                        {Object.entries(p.specs).map(([key, value], i) => (
+                          <tr key={key} className={cn(
+                            "group transition-colors",
+                            i % 2 === 0 ? "bg-slate-50/50" : "bg-white"
+                          )}>
+                            <td className="px-8 py-5 text-sm font-black text-slate-400 uppercase tracking-widest w-1/3 border-r border-slate-100">{key}</td>
+                            <td className="px-8 py-5 text-sm font-bold text-[#001C4B]">{String(value)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              )}
             </div>
-            <h2 className="mt-3 font-display text-2xl sm:text-3xl font-extrabold">Place Your Order</h2>
-            <p className="mt-1.5 text-sm text-white/70">Fill the form — we'll confirm on WhatsApp instantly.</p>
 
-            <form onSubmit={onSubmit} className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Field label="Customer Name" required value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
-              <Field label="Phone Number" required type="tel" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
-              <Field label="City" required value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
-              <Field label="Quantity" required type="number" min={1} value={String(form.quantity)} onChange={(v) => setForm({ ...form, quantity: Math.max(1, Number(v) || 1) })} />
-              <div className="sm:col-span-2">
-                <Field label="Product" value={p.name} disabled onChange={() => {}} />
-              </div>
-              <div className="sm:col-span-2">
-                <Field label="Address" required value={form.address} onChange={(v) => setForm({ ...form, address: v })} />
-              </div>
-              <div className="sm:col-span-2">
-                <label className="text-xs font-semibold text-white/80 uppercase tracking-wider">Notes (optional)</label>
-                <textarea
-                  rows={3}
-                  value={form.notes}
-                  onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                  className="mt-1.5 w-full rounded-xl glass-dark px-4 py-3 text-sm text-white placeholder-white/40 outline-none focus:ring-2 focus:ring-neon"
-                  placeholder="Color, model preference, etc."
-                />
-              </div>
+            {/* Sticky Order Form Side */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-24 rounded-[3rem] bg-[#001C4B] p-8 text-white shadow-2xl overflow-hidden group">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-400/10 blur-[80px] rounded-full group-hover:bg-cyan-400/20 transition-all duration-700" />
+                
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-8">
+                    <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center backdrop-blur-xl">
+                      <MessageCircle className="w-5 h-5 text-cyan-400" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-lg">Quick Checkout</h4>
+                      <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Via WhatsApp</p>
+                    </div>
+                  </div>
 
-              <button
-                type="submit"
-                className="sm:col-span-2 mt-2 inline-flex items-center justify-center gap-2 h-14 rounded-2xl bg-neon-gradient text-white text-base font-bold shadow-neon hover:scale-[1.02] active:scale-95 transition-transform"
-              >
-                <MessageCircle className="h-5 w-5" /> ORDER NOW VIA WHATSAPP
-              </button>
-            </form>
+                  <form onSubmit={onSubmit} className="space-y-4">
+                    <Field label="Your Name" required value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
+                    <Field label="Phone Number" required type="tel" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
+                    <Field label="Delivery City" required value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="col-span-1">
+                        <Field label="Quantity" required type="number" min={1} value={String(form.quantity)} onChange={(v) => setForm({ ...form, quantity: Math.max(1, Number(v) || 1) })} />
+                      </div>
+                    </div>
+                    <Field label="Complete Address" required value={form.address} onChange={(v) => setForm({ ...form, address: v })} />
+                    
+                    <button
+                      type="submit"
+                      className="w-full mt-6 h-16 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-500 text-white text-sm font-black uppercase tracking-widest shadow-xl shadow-cyan-500/20 hover:scale-[1.02] active:scale-95 transition-all"
+                    >
+                      Confirm Order
+                    </button>
+                  </form>
+
+                  <div className="mt-8 flex items-center justify-center gap-4 text-white/30">
+                    <Truck className="w-4 h-4" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-center">Fast Nationwide Delivery</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Related */}
+        {/* Related Products */}
         {related.length > 0 && (
-          <div className="mt-16">
-            <h2 className="font-display text-2xl font-extrabold">You May Also Like</h2>
-            <div className="mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="mt-32">
+            <div className="flex items-center justify-between mb-12">
+              <h2 className="text-3xl font-black text-[#001C4B]">You May Also Like</h2>
+              <Link to="/mobiles" className="text-sm font-black text-cyan-500 uppercase tracking-widest hover:text-cyan-600">View All</Link>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
               {related.map((r, i) => <ProductCard key={r.id} p={r} index={i} />)}
             </div>
           </div>
@@ -185,8 +286,8 @@ function ProductPage() {
 
 function Field({ label, value, onChange, type = "text", required, disabled, min }: { label: string; value: string; onChange: (v: string) => void; type?: string; required?: boolean; disabled?: boolean; min?: number }) {
   return (
-    <div>
-      <label className="text-xs font-semibold text-white/80 uppercase tracking-wider">{label}{required && <span className="text-neon"> *</span>}</label>
+    <div className="space-y-1.5">
+      <label className="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">{label}</label>
       <input
         type={type}
         value={value}
@@ -194,7 +295,7 @@ function Field({ label, value, onChange, type = "text", required, disabled, min 
         disabled={disabled}
         min={min}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1.5 w-full h-12 rounded-xl glass-dark px-4 text-sm text-white placeholder-white/40 outline-none focus:ring-2 focus:ring-neon disabled:opacity-70"
+        className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 transition-all"
       />
     </div>
   );

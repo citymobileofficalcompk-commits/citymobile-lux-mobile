@@ -1,7 +1,8 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { findCategory, productsByCategory } from "@/lib/site-data";
+import { findCategory } from "@/lib/site-data";
 import { ProductCard } from "@/components/ProductCard";
+import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/category/$slug")({
   head: ({ params }) => {
@@ -13,17 +14,29 @@ export const Route = createFileRoute("/category/$slug")({
       ],
     };
   },
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
     const category = findCategory(params.slug);
     if (!category) throw notFound();
-    const products = productsByCategory(params.slug);
-    return { category, products };
+    
+    const { data: products } = await supabase
+      .from('products')
+      .select('*')
+      .eq('category', category.name)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false });
+
+    return { category, products: products || [] };
   },
   component: CategoryPage,
 });
 
 function CategoryPage() {
-  const { category, products } = Route.useLoaderData();
+  const data = Route.useLoaderData() as any;
+  
+  if (!data) return null;
+  
+  const category: any = data.category;
+  const products: any[] = data.products || [];
   return (
     <div className="pt-24 pb-32">
       <div className="mx-auto max-w-6xl px-4">

@@ -1,27 +1,81 @@
 import { useEffect, useState } from "react";
-import { Flame, Zap } from "lucide-react";
+import { Flame, Zap, Loader2 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
-function useCountdown(target: Date) {
-  const [t, setT] = useState({ d: 0, h: 0, m: 0, s: 0 });
+function useCountdown(target: Date | null) {
+  const [t, setT] = useState({ d: 0, h: 0, m: 0, s: 0, expired: false });
+  
   useEffect(() => {
+    if (!target) return;
+
     const tick = () => {
-      const diff = Math.max(0, target.getTime() - Date.now());
-      const d = Math.floor(diff / 86400000);
-      const h = Math.floor((diff / 3600000) % 24);
-      const m = Math.floor((diff / 60000) % 60);
-      const s = Math.floor((diff / 1000) % 60);
-      setT({ d, h, m, s });
+      const now = new Date().getTime();
+      const distance = target.getTime() - now;
+      
+      if (distance < 0) {
+        setT({ d: 0, h: 0, m: 0, s: 0, expired: true });
+        return;
+      }
+
+      const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((distance % (1000 * 60)) / 1000);
+      
+      setT({ d, h, m, s, expired: false });
     };
+
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, [target]);
+
   return t;
 }
 
 export function DealOfTheDay() {
-  const target = new Date(Date.now() + 1000 * 60 * 60 * 50);
-  const t = useCountdown(target);
+  const [activeOffer, setActiveOffer] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchActiveOffer = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('offers')
+          .select('*')
+          .eq('is_active', true)
+          .not('end_date', 'is', null)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (error) {
+          console.log("No active countdown offer found");
+          setActiveOffer(null);
+        } else {
+          setActiveOffer(data);
+        }
+      } catch (err) {
+        console.error("Error fetching offer:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchActiveOffer();
+  }, []);
+
+  const targetDate = activeOffer?.end_date ? new Date(activeOffer.end_date) : null;
+  const t = useCountdown(targetDate);
+  
+  if (isLoading) return (
+    <div className="py-20 flex justify-center">
+      <Loader2 className="w-8 h-8 text-cyan-500 animate-spin" />
+    </div>
+  );
+
+  if (!activeOffer || t.expired) return null;
+
   const cells = [
     { v: t.d, l: "Days" },
     { v: t.h, l: "Hours" },
@@ -32,28 +86,55 @@ export function DealOfTheDay() {
   return (
     <section className="relative py-12">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="relative overflow-hidden rounded-3xl bg-hero text-white p-6 sm:p-10 shadow-elevated">
-          <div className="absolute inset-0 bg-glow opacity-60" />
-          <div className="absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-neon-gradient blur-3xl opacity-40" />
-          <div className="relative grid gap-6 md:grid-cols-2 items-center">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full glass-dark px-3 py-1.5 text-xs font-bold">
-                <Flame className="h-3.5 w-3.5 text-neon" /> DEAL OF THE DAY
+        <div className="relative overflow-hidden rounded-[3rem] bg-[#001C4B] text-white p-8 sm:p-12 shadow-2xl shadow-blue-950/20">
+          {/* Dynamic Background Image with Overlay */}
+          {activeOffer.image_url && (
+            <div className="absolute inset-0">
+              <img 
+                src={activeOffer.image_url} 
+                className="w-full h-full object-cover opacity-30" 
+                alt="Promo background"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#001C4B] via-[#001C4B]/80 to-transparent" />
+            </div>
+          )}
+          
+          <div className="absolute -bottom-20 -right-20 h-96 w-96 rounded-full bg-cyan-500 blur-[120px] opacity-20" />
+          
+          <div className="relative grid gap-10 md:grid-cols-2 items-center">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 rounded-full bg-cyan-400/10 border border-cyan-400/20 px-4 py-2 text-xs font-black tracking-widest text-cyan-400 uppercase">
+                <Flame className="h-4 w-4 fill-current" /> FLASH SALE
               </div>
-              <h2 className="mt-4 font-display text-3xl sm:text-4xl font-extrabold leading-tight">
-                Up to <span className="text-gradient">30% OFF</span><br/> on Premium Smartphones
+              
+              <h2 className="font-display text-4xl sm:text-5xl font-black leading-[1.1]">
+                {activeOffer.discount_text && (
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 block mb-2">
+                    {activeOffer.discount_text}
+                  </span>
+                )}
+                {activeOffer.title}
               </h2>
-              <p className="mt-3 text-white/70 max-w-md">Limited stock. Hand-selected flagships at unbeatable prices — only at City Mobile.</p>
-              <button className="mt-6 inline-flex items-center gap-2 h-12 px-6 rounded-2xl bg-neon-gradient text-white font-semibold shadow-neon hover:scale-[1.03] transition-transform">
-                <Zap className="h-4 w-4" /> Shop Deals
+              
+              <p className="text-lg text-slate-300 max-w-md font-medium">
+                {activeOffer.subtitle || "Limited stock available. Grab yours before the timer hits zero!"}
+              </p>
+              
+              <button className="inline-flex items-center gap-3 h-14 px-8 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-bold shadow-xl shadow-cyan-500/20 hover:scale-[1.05] transition-all group">
+                <Zap className="h-5 w-5 fill-current group-hover:animate-pulse" /> 
+                Shop the Deals
               </button>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 sm:gap-3">
+            <div className="grid grid-cols-4 gap-3 sm:gap-4">
               {cells.map((c) => (
-                <div key={c.l} className="rounded-2xl glass-dark p-3 sm:p-5 text-center">
-                  <div className="font-display text-2xl sm:text-4xl font-extrabold tabular-nums">{String(c.v).padStart(2, "0")}</div>
-                  <div className="mt-1 text-[10px] sm:text-xs uppercase tracking-wider text-white/60">{c.l}</div>
+                <div key={c.l} className="rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 p-4 sm:p-6 text-center shadow-lg transition-transform hover:-translate-y-1">
+                  <div className="font-display text-3xl sm:text-5xl font-black tabular-nums tracking-tighter text-cyan-400">
+                    {String(c.v).padStart(2, "0")}
+                  </div>
+                  <div className="mt-2 text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-slate-400">
+                    {c.l}
+                  </div>
                 </div>
               ))}
             </div>
