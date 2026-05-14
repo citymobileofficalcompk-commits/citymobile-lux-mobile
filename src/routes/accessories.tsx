@@ -36,7 +36,7 @@ function AccessoriesPage() {
           </div>
         ) : (
           <div className="mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-in fade-in duration-500">
-            {products.map((p, i) => <ProductCard key={p.id} p={p} index={i} />)}
+            {products.map((p: any, i: number) => <ProductCard key={p.id} p={p} index={i} />)}
           </div>
         )}
       </div>

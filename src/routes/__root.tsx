@@ -13,7 +13,6 @@ import appCss from "../styles.css?url";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
-import { Splash } from "@/components/Splash";
 import { BottomNav } from "@/components/BottomNav";
 
 function NotFoundComponent() {
@@ -128,7 +127,6 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {!isAdminPath && <Splash />}
       {!isAdminPath && <Header />}
       <main className={!isAdminPath ? "min-h-screen pb-24" : "min-h-screen"}>
         <Outlet />
