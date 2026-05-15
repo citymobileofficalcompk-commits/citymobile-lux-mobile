@@ -238,22 +238,30 @@ function ProductPage() {
                     </div>
                   </div>
 
-                  <form onSubmit={onSubmit} className="space-y-4">
-                    <Field label="Your Name" required value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
-                    <Field label="Phone Number" required type="tel" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
-                    <Field label="Delivery City" required value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="col-span-1">
-                        <Field label="Quantity" required type="number" min={1} value={String(form.quantity)} onChange={(v) => setForm({ ...form, quantity: Math.max(1, Number(v) || 1) })} />
-                      </div>
+                  <form onSubmit={onSubmit} className="space-y-3.5">
+                    <Field label="Customer Name" required value={form.name} onChange={(v) => setForm({ ...form, name: v })} placeholder="e.g. Ahmad Raza" />
+                    <Field label="Phone Number" required type="tel" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} placeholder="03XX-XXXXXXX" />
+                    <div className="grid grid-cols-2 gap-3">
+                      <Field label="City" required value={form.city} onChange={(v) => setForm({ ...form, city: v })} placeholder="Lahore" />
+                      <Field label="Quantity" required type="number" min={1} value={String(form.quantity)} onChange={(v) => setForm({ ...form, quantity: Math.max(1, Number(v) || 1) })} />
                     </div>
-                    <Field label="Complete Address" required value={form.address} onChange={(v) => setForm({ ...form, address: v })} />
-                    
+                    <Field label="Address" required value={form.address} onChange={(v) => setForm({ ...form, address: v })} placeholder="House #, Street, Area" />
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Notes (optional)</label>
+                      <textarea
+                        value={form.notes}
+                        onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                        rows={2}
+                        placeholder="Any special instructions…"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/30 transition-all resize-none"
+                      />
+                    </div>
+
                     <button
                       type="submit"
-                      className="w-full mt-6 h-16 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-500 text-white text-sm font-black uppercase tracking-widest shadow-xl shadow-cyan-500/20 hover:scale-[1.02] active:scale-95 transition-all"
+                      className="w-full mt-2 h-14 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-500 text-white text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-[1.01] active:scale-95 transition-all duration-200"
                     >
-                      Confirm Order
+                      Order Now via WhatsApp
                     </button>
                   </form>
 
