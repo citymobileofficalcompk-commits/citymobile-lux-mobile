@@ -56,8 +56,9 @@ function CategoryPage() {
             {products.map((p: any, i: number) => <ProductCard key={p.id} p={p} index={i} />)}
           </div>
         ) : (
-          <div className="mt-12 rounded-3xl bg-card border border-border/60 p-10 text-center">
-            <p className="text-muted-foreground">New stock arriving soon. Contact us on WhatsApp for current availability.</p>
+          <div className="mt-12 rounded-3xl bg-card border border-border/60 p-12 text-center">
+            <p className="text-lg font-bold text-foreground">Products Not Found</p>
+            <p className="mt-2 text-sm text-muted-foreground">No items in this category yet. Contact us on WhatsApp for current availability.</p>
           </div>
         )}
       </div>
