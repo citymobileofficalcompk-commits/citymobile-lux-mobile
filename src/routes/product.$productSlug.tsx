@@ -292,7 +292,7 @@ function ProductPage() {
   );
 }
 
-function Field({ label, value, onChange, type = "text", required, disabled, min }: { label: string; value: string; onChange: (v: string) => void; type?: string; required?: boolean; disabled?: boolean; min?: number }) {
+function Field({ label, value, onChange, type = "text", required, disabled, min, placeholder }: { label: string; value: string; onChange: (v: string) => void; type?: string; required?: boolean; disabled?: boolean; min?: number; placeholder?: string }) {
   return (
     <div className="space-y-1.5">
       <label className="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">{label}</label>
@@ -302,8 +302,9 @@ function Field({ label, value, onChange, type = "text", required, disabled, min 
         required={required}
         disabled={disabled}
         min={min}
+        placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 transition-all"
+        className="w-full h-12 bg-white/5 border border-white/10 rounded-2xl px-4 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/30 transition-all"
       />
     </div>
   );
