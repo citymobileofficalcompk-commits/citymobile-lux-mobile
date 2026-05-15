@@ -1,17 +1,13 @@
 export const CATEGORIES = [
-  { slug: "new-mobile", name: "New Mobile", icon: "Smartphone" },
-  { slug: "used-mobile", name: "Used Mobile", icon: "RefreshCw" },
-  { slug: "tablet", name: "Tablet", icon: "Tablet" },
-  { slug: "ipod", name: "iPod", icon: "Music2" },
-  { slug: "watch", name: "Watch", icon: "Watch" },
-  { slug: "power-bank", name: "Power Bank", icon: "BatteryCharging" },
-  { slug: "hand-free", name: "Hand Free", icon: "Headphones" },
+  { slug: "mobiles", name: "Mobiles", icon: "Smartphone" },
+  { slug: "laptops", name: "Laptops", icon: "Laptop" },
+  { slug: "tablets", name: "Tablets", icon: "Tablet" },
+  { slug: "adapter", name: "Adapter", icon: "Plug" },
+  { slug: "charger", name: "Charger", icon: "BatteryCharging" },
   { slug: "headphones", name: "Headphones", icon: "Headset" },
   { slug: "buds", name: "Buds", icon: "Ear" },
   { slug: "airpods", name: "AirPods", icon: "Airplay" },
   { slug: "data-cable", name: "Data Cable", icon: "Cable" },
-  { slug: "adapter", name: "Adapter", icon: "Plug" },
-  { slug: "games", name: "Games", icon: "Gamepad2" },
   { slug: "covers", name: "Covers", icon: "ShieldCheck" },
   { slug: "glass", name: "Glass", icon: "Square" },
   { slug: "3d-sheets", name: "3D Sheets", icon: "Layers" },
@@ -20,6 +16,10 @@ export const CATEGORIES = [
   { slug: "lights", name: "Lights", icon: "Lightbulb" },
   { slug: "holders", name: "Holders", icon: "MonitorSmartphone" },
   { slug: "stands", name: "Stands", icon: "TabletSmartphone" },
+  { slug: "watches", name: "Watches", icon: "Watch" },
+  { slug: "power-banks", name: "Power Banks", icon: "BatteryFull" },
+  { slug: "games", name: "Games", icon: "Gamepad2" },
+  { slug: "hand-free", name: "Hand Free", icon: "Headphones" },
 ] as const;
 
 export const BRANDS = [
