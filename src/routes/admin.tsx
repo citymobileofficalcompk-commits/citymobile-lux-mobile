@@ -13,6 +13,20 @@ function AdminLayout() {
   const navigate = useNavigate();
   const [isClient, setIsClient] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem('admin-sidebar-collapsed') === 'true';
+  });
+
+  const toggleCollapsed = () => {
+    setCollapsed((prev) => {
+      const next = !prev;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('admin-sidebar-collapsed', String(next));
+      }
+      return next;
+    });
+  };
   
   const isLoginPage = location.pathname === '/admin/login';
 
