@@ -13,6 +13,20 @@ function AdminLayout() {
   const navigate = useNavigate();
   const [isClient, setIsClient] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem('admin-sidebar-collapsed') === 'true';
+  });
+
+  const toggleCollapsed = () => {
+    setCollapsed((prev) => {
+      const next = !prev;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('admin-sidebar-collapsed', String(next));
+      }
+      return next;
+    });
+  };
   
   const isLoginPage = location.pathname === '/admin/login';
 
@@ -58,8 +72,8 @@ function AdminLayout() {
   // If authenticated (or we are on login page), show the layout
   return (
     <div className="flex min-h-screen bg-slate-50">
-      <AdminSidebar />
-      <div className="flex-1 lg:ml-72">
+      <AdminSidebar collapsed={collapsed} onToggle={toggleCollapsed} />
+      <div className={`flex-1 transition-[margin] duration-300 ease-in-out ${collapsed ? 'lg:ml-20' : 'lg:ml-72'}`}>
         <AdminHeader />
         <main className="p-4 md:p-8">
           <Outlet />
