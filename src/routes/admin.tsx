@@ -17,6 +17,12 @@ function AdminLayout() {
     if (typeof window === 'undefined') return false;
     return localStorage.getItem('admin-sidebar-collapsed') === 'true';
   });
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Close mobile drawer whenever the route changes
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
 
   const toggleCollapsed = () => {
     setCollapsed((prev) => {
@@ -72,9 +78,14 @@ function AdminLayout() {
   // If authenticated (or we are on login page), show the layout
   return (
     <div className="flex min-h-screen bg-slate-50">
-      <AdminSidebar collapsed={collapsed} onToggle={toggleCollapsed} />
-      <div className={`flex-1 transition-[margin] duration-300 ease-in-out ${collapsed ? 'lg:ml-20' : 'lg:ml-72'}`}>
-        <AdminHeader />
+      <AdminSidebar
+        collapsed={collapsed}
+        onToggle={toggleCollapsed}
+        mobileOpen={mobileOpen}
+        onMobileClose={() => setMobileOpen(false)}
+      />
+      <div className={`flex-1 min-w-0 transition-[margin] duration-300 ease-in-out ${collapsed ? 'lg:ml-20' : 'lg:ml-72'}`}>
+        <AdminHeader onMobileMenuClick={() => setMobileOpen(true)} />
         <main className="p-4 md:p-8">
           <Outlet />
         </main>

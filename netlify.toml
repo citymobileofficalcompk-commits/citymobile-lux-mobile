@@ -1,13 +1,8 @@
 [build]
-  command = "bun run build"
+  command = "bun run build && bun run scripts/make-spa-index.mjs"
   publish = "dist/client"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-# Note: This project uses TanStack Start with SSR on Cloudflare Workers.
-# Netlify deployment here serves the built client as a SPA fallback.
-# For full SSR/server functions, deploy via Lovable Publish (Cloudflare)
-# or migrate the server entry to a Netlify Edge Function.
