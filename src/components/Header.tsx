@@ -47,8 +47,8 @@ export function Header() {
     <>
       <header className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? "py-2" : "py-3"}`}>
         <div className="mx-auto max-w-6xl px-3">
-          <div className={`glass rounded-2xl px-3 py-2.5 flex items-center justify-between gap-2 ${scrolled ? "shadow-soft" : ""}`}>
-            <Link to="/" className="flex items-center">
+          <div className={`glass rounded-2xl px-2.5 sm:px-3 py-2 sm:py-2.5 flex items-center justify-between gap-1.5 sm:gap-2 min-w-0 ${scrolled ? "shadow-soft" : ""}`}>
+            <Link to="/" className="flex items-center min-w-0 shrink">
               <Logo size="sm" />
             </Link>
 

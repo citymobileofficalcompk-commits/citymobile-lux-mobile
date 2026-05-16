@@ -75,7 +75,7 @@ export function HeroSlider() {
     <section className="relative pt-20 pb-6 overflow-hidden">
       <div className="mx-auto max-w-6xl px-3 sm:px-4">
         <div
-          className="relative h-[460px] sm:h-[560px] rounded-[28px] overflow-hidden shadow-elevated ring-1 ring-white/10 bg-slate-950"
+          className="relative h-[380px] xs:h-[420px] sm:h-[520px] md:h-[560px] rounded-2xl sm:rounded-[28px] overflow-hidden shadow-elevated ring-1 ring-white/10 bg-slate-950"
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
           onMouseEnter={() => (pause.current = true)}
@@ -123,7 +123,7 @@ export function HeroSlider() {
                     )}
 
                     <h1
-                      className={`mt-3 font-display text-[38px] leading-[1.02] sm:text-6xl font-extrabold tracking-tight ${active ? "animate-fade-up" : ""}`}
+                      className={`mt-3 font-display text-[28px] leading-[1.05] xs:text-[34px] sm:text-5xl md:text-6xl font-extrabold tracking-tight break-words ${active ? "animate-fade-up" : ""}`}
                       style={{ animationDelay: "120ms" }}
                     >
                       {s.title}{" "}
