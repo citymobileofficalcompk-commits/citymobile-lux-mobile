@@ -70,6 +70,11 @@ function AdminProducts() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
+  // Filter States
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
+
   const fetchProducts = async () => {
     setIsLoading(true);
     try {
@@ -91,10 +96,27 @@ function AdminProducts() {
     fetchProducts();
   }, []);
 
-  const filteredProducts = products.filter(p =>
-    p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.category?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const availableCategories = Array.from(new Set([
+    ...products.map(p => p.category).filter(Boolean),
+    "New Mobile", "Used Mobile", "Tablet", "iPod", "Watch",
+    "Power Bank", "Hand Free", "Headphones", "Buds", "AirPods",
+    "Data Cable", "Adapter", "Games", "Covers", "Glass",
+    "3D Sheets", "Speakers", "Mic", "Lights", "Holders"
+  ])).sort();
+
+  const filteredProducts = products.filter(p => {
+    const matchesSearch = 
+      p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.category?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+    const matchesCategory = !selectedCategory || p.category === selectedCategory;
+    
+    const matchesStatus = !selectedStatus || 
+      (selectedStatus === 'active' && p.is_active === true) ||
+      (selectedStatus === 'inactive' && p.is_active === false);
+
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
 
   const handleEdit = (product: any) => {
     setSelectedProduct(product);
@@ -166,10 +188,72 @@ function AdminProducts() {
             className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-cyan-400/50 transition-all text-sm"
           />
         </div>
-        <button className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-[#001C4B] hover:bg-slate-50 transition-colors w-full md:w-auto">
-          <Filter className="w-4 h-4" />
-          Filters
-        </button>
+        <div className="relative w-full md:w-auto z-30">
+          <button
+            onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-[#001C4B] hover:bg-slate-50 transition-colors w-full md:w-auto cursor-pointer"
+          >
+            <Filter className="w-4 h-4 text-cyan-500" />
+            Filters
+            {(selectedCategory || selectedStatus) && (
+              <span className="inline-flex items-center justify-center w-5 h-5 bg-cyan-400 text-white text-[9px] font-black rounded-full shadow-md shadow-cyan-400/20">
+                {Number(!!selectedCategory) + Number(!!selectedStatus)}
+              </span>
+            )}
+          </button>
+
+          {isFilterDropdownOpen && (
+            <>
+              {/* Click outside backdrop */}
+              <div 
+                className="fixed inset-0 z-30" 
+                onClick={() => setIsFilterDropdownOpen(false)} 
+              />
+              <div className="absolute right-0 mt-3 w-80 bg-white/95 backdrop-blur-md rounded-3xl shadow-xl shadow-blue-900/10 border border-slate-100 p-6 z-40 animate-in fade-in slide-in-from-top-2 duration-300 space-y-5">
+                <div>
+                  <h4 className="font-extrabold text-[#001C4B] text-sm tracking-tight">Filter Inventory</h4>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Refine product catalog list</p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1">Category Selection</label>
+                  <select 
+                    value={selectedCategory} 
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-bold text-[#001C4B] focus:ring-2 focus:ring-cyan-400/30 outline-none appearance-none cursor-pointer"
+                  >
+                    <option value="">All Categories</option>
+                    {availableCategories.map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block ml-1">Live Status</label>
+                  <select 
+                    value={selectedStatus} 
+                    onChange={(e) => setSelectedStatus(e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-bold text-[#001C4B] focus:ring-2 focus:ring-cyan-400/30 outline-none appearance-none cursor-pointer"
+                  >
+                    <option value="">All Statuses</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive (Disabled)</option>
+                  </select>
+                </div>
+
+                {(selectedCategory || selectedStatus) && (
+                  <button 
+                    onClick={() => { setSelectedCategory(""); setSelectedStatus(""); }}
+                    className="w-full py-3 text-[10px] font-black uppercase tracking-widest text-red-500 bg-red-50 hover:bg-red-100 transition-colors rounded-2xl cursor-pointer"
+                  >
+                    Reset Active Filters
+                  </button>
+                )}
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Products Table */}
