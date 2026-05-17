@@ -2,6 +2,8 @@
   "version": 2,
   "routes": [
     { "handle": "filesystem" },
+    { "src": "/assets/(.*)", "dest": "/client/assets/$1" },
+    { "src": "/(favicon.ico|vite.svg|manifest.json)", "dest": "/client/$1" },
     { "src": "/(.*)", "dest": "/api/index" }
   ]
 }
